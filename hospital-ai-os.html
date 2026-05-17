@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital AI OS — Dr. Mehul Upadhyay</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c0f;
+  --bg2: #111318;
+  --bg3: #181c22;
+  --bg4: #1e2229;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text2: #8b909e;
+  --text3: #555b6a;
+  --accent: #4f9cf9;
+  --accent2: #3d7fd4;
+  --green: #34c77b;
+  --amber: #f5a623;
+  --red: #f05a5a;
+  --purple: #9b7dea;
+  --teal: #3ecfb2;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(10,12,15,0.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1a6bdb,#4f9cf9);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-text{font-size:16px;font-weight:600;color:var(--text);}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.date-badge{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;}
+.view-toggle{display:flex;background:var(--bg3);border-radius:8px;padding:3px;gap:2px;}
+.vbtn{font-size:12px;padding:5px 14px;border-radius:6px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.vbtn.active{background:var(--bg4);color:var(--text);font-weight:500;}
+
+/* API BANNER */
+.api-banner{padding:.875rem 1.5rem;background:rgba(79,156,249,0.08);border-bottom:1px solid rgba(79,156,249,0.15);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.api-banner-label{font-size:12px;color:var(--accent);font-weight:500;white-space:nowrap;}
+.api-input{flex:1;min-width:200px;font-size:12px;padding:7px 12px;border-radius:7px;border:1px solid rgba(79,156,249,0.25);background:rgba(79,156,249,0.05);color:var(--text);font-family:'DM Mono',monospace;outline:none;}
+.api-input:focus{border-color:rgba(79,156,249,0.5);}
+.api-activate{font-size:12px;padding:7px 18px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.api-activate:hover{background:var(--accent2);}
+.api-link{font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline;white-space:nowrap;opacity:.8;}
+.api-ok{padding:.625rem 1.5rem;background:rgba(52,199,123,0.08);border-bottom:1px solid rgba(52,199,123,0.15);font-size:12px;color:var(--green);display:none;align-items:center;gap:8px;}
+.api-ok-change{font-size:11px;margin-left:auto;padding:3px 10px;border-radius:6px;border:1px solid rgba(52,199,123,0.3);background:transparent;color:var(--green);cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* DASHBOARD */
+.dashboard{padding:1.5rem;}
+
+/* CEO CARD */
+.ceo-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;}
+.ceo-header{display:flex;align-items:center;gap:14px;margin-bottom:1rem;}
+.ceo-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#2d1f6b,#6b4ef9);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ceo-info{flex:1;}
+.ceo-name{font-size:15px;font-weight:600;color:var(--text);}
+.ceo-desc{font-size:12px;color:var(--text3);margin-top:2px;}
+.ceo-actions{display:flex;gap:8px;}
+.btn-run{display:flex;align-items:center;gap:6px;font-size:13px;padding:8px 18px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.btn-run:hover{background:var(--accent2);}
+.btn-run:disabled{opacity:.5;cursor:not-allowed;}
+.btn-chat-ceo{font-size:13px;padding:8px 18px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.btn-chat-ceo:hover{background:var(--bg3);}
+.task-queue-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.task-empty{font-size:13px;color:var(--text3);padding:8px 0;}
+.task-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);margin-bottom:6px;transition:opacity .2s;}
+.task-dept-badge{font-size:10px;padding:3px 9px;border-radius:99px;font-weight:600;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+.task-text{flex:1;font-size:13px;color:var(--text);line-height:1.45;}
+.task-approve{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(52,199,123,0.4);color:var(--green);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;}
+.task-approve:hover{background:rgba(52,199,123,0.1);}
+.task-skip{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text3);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+
+/* DEPT GRID */
+.dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:1.5rem;}
+.dept-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.125rem;transition:border-color .2s;}
+.dept-card:hover{border-color:var(--border2);}
+.dept-card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.dept-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--bg3);flex-shrink:0;}
+.dept-name{font-size:13px;font-weight:600;color:var(--text);}
+.dept-desc{font-size:11px;color:var(--text3);}
+.dept-status{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--text3);display:inline-block;transition:background .3s;}
+.sdot.on{background:var(--green);box-shadow:0 0 6px rgba(52,199,123,0.5);}
+.dept-task-text{font-size:12px;color:var(--text3);background:var(--bg3);border-radius:7px;padding:8px 10px;margin-bottom:10px;min-height:46px;line-height:1.55;}
+.dept-btns{display:flex;gap:6px;}
+.dept-open{flex:1;font-size:12px;padding:7px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.dept-open:hover{background:var(--bg3);}
+.dept-chat-btn{font-size:12px;padding:7px 14px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.dept-chat-btn:hover{background:var(--bg3);}
+
+/* ACTIVITY LOG */
+.alog-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;}
+.alog-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.alog-item{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3);}
+.alog-item:last-child{border-bottom:none;}
+.alog-time{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);min-width:50px;flex-shrink:0;}
+.alog-empty{font-size:12px;color:var(--text3);}
+
+/* CHAT VIEW */
+.chat-view{padding:1.5rem;display:none;}
+.chat-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.chat-icon{font-size:22px;}
+.chat-dept-name{font-size:15px;font-weight:600;color:var(--text);}
+.chat-dept-desc{font-size:11px;color:var(--text3);}
+.chat-back{margin-left:auto;font-size:12px;padding:6px 14px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;}
+.chat-messages{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;min-height:280px;max-height:420px;overflow-y:auto;margin-bottom:1rem;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;}
+.msg{max-width:85%;line-height:1.55;font-size:13px;border-radius:10px;padding:10px 14px;}
+.msg.user{align-self:flex-end;background:var(--bg4);border:1px solid var(--border2);color:var(--text);}
+.msg.agent{align-self:flex-start;background:rgba(79,156,249,0.1);border:1px solid rgba(79,156,249,0.2);color:#c8dcff;}
+.msg.loading{align-self:flex-start;color:var(--text3);font-style:italic;background:transparent;border:none;padding:0;}
+.chat-input-row{display:flex;gap:10px;}
+.chat-input{flex:1;font-size:13px;padding:10px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
+.chat-input:focus{border-color:rgba(79,156,249,0.4);}
+.chat-send{font-size:13px;padding:10px 22px;border-radius:9px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.chat-send:hover{background:var(--accent2);}
+
+/* SPINNER */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+/* DEPT BADGE COLORS */
+.badge-quality{background:rgba(79,156,249,0.15);color:#7ab8fb;}
+.badge-operations{background:rgba(52,199,123,0.15);color:#52e49a;}
+.badge-marketing{background:rgba(245,166,35,0.15);color:#f5c35a;}
+.badge-business{background:rgba(240,90,90,0.15);color:#f07878;}
+.badge-hr{background:rgba(155,125,234,0.15);color:#c4aef9;}
+.badge-nabh_saas{background:rgba(62,207,178,0.15);color:#5eecd4;}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.dept-card,.ceo-card,.alog-section{animation:fadeIn .3s ease both;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🏥</div>
+    <div>
+      <div class="logo-text">Hospital AI OS</div>
+      <div class="logo-sub">Dr. Mehul Upadhyay · HMP Foundation</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="date-badge" id="os-date"></div>
+    <div class="view-toggle">
+      <button class="vbtn active" onclick="setView('dashboard',this)">Dashboard</button>
+      <button class="vbtn" onclick="setView('chat',this)">Chat</button>
+    </div>
+  </div>
+</div>
+
+<div id="api-banner" class="api-banner">
+  <span class="api-banner-label">🔑 Gemini API Key (Free):</span>
+  <input type="password" class="api-input" id="api-key-input" placeholder="AIzaSy..." />
+  <button class="api-activate" onclick="saveKey()">Activate Agents</button>
+  <a class="api-link" href="https://aistudio.google.com/app/apikey" target="_blank">Get free key →</a>
+</div>
+<div id="api-ok" class="api-ok">
+  ✓ Gemini API active — all 6 agents ready &nbsp;|&nbsp; Free tier: 1,500 requests/day
+  <button class="api-ok-change" onclick="clearKey()">Change key</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-view" class="dashboard">
+
+  <div class="ceo-card">
+    <div class="ceo-header">
+      <div class="ceo-avatar">🧠</div>
+      <div class="ceo-info">
+        <div class="ceo-name">CEO Agent</div>
+        <div class="ceo-desc">Analyses all operations · Proposes tasks · You approve everything</div>
+      </div>
+      <div class="ceo-actions">
+        <button class="btn-chat-ceo" onclick="openChat('ceo')">Chat with CEO</button>
+        <button class="btn-run" id="abtn" onclick="runAnalysis()">
+          <span>⚡</span> Run Analysis
+        </button>
+      </div>
+    </div>
+    <div class="task-queue-label">Task Queue</div>
+    <div id="task-list"><div class="task-empty">No tasks yet. Run analysis to get AI-proposed tasks for today.</div></div>
+  </div>
+
+  <div class="dept-grid" id="dept-grid"></div>
+
+  <div class="alog-section">
+    <div class="alog-title">Activity Log</div>
+    <div id="alog"><div class="alog-empty">System initialised.</div></div>
+  </div>
+</div>
+
+<!-- CHAT VIEW -->
+<div id="chat-view" class="chat-view">
+  <div class="chat-header">
+    <div class="chat-icon" id="ch-icon">🧠</div>
+    <div>
+      <div class="chat-dept-name" id="ch-name">CEO Agent</div>
+      <div class="chat-dept-desc" id="ch-desc">All operations · Proposes tasks</div>
+    </div>
+    <button class="chat-back" onclick="goBack()">← Back</button>
+  </div>
+  <div class="chat-messages" id="chat-msgs"></div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-inp" placeholder="Ask your agent anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendMsg()" />
+    <button class="chat-send" onclick="sendMsg()">Send</button>
+  </div>
+</div>
+
+<script>
+const DEPTS = [
+  {
+    id:'quality', icon:'🏥', name:'Quality & NABH', desc:'OEs, audits, KPIs, drills',
+    p:`You are the Quality & NABH Agent for HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay (Head of Medical Services & Operations, NABH Quality Manager, 15 yrs experience) is your director. Domain: NABH 6th edition compliance, 639 OEs scoring, 35 clinical & nursing audits, 26 committees, 50 KPIs, 13 mock drills, statutory license tracker, patient tracer tool. Give specific, actionable advice. Be direct and practical. No vague answers.`
+  },
+  {
+    id:'operations', icon:'⚙️', name:'Operations', desc:'OPD, IPD, drills, facilities',
+    p:`You are the Operations Agent for HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay is director. Domain: daily hospital operations, OPD management, IPD management, mock drills scheduling, statutory license renewals, patient tracers, facility management. Give actionable, specific advice. Be direct.`
+  },
+  {
+    id:'marketing', icon:'📣', name:'Marketing & Growth', desc:'BMC, LinkedIn, NABH SaaS outreach',
+    p:`You are the Marketing Agent for Dr. Mehul Upadhyay. He runs: 1) BookMyClinic (BMC) at bookmyclinics.com — 9 free Gujarat clinics onboarded, WhatsApp outreach system built with GAS + ChatMitra, 200+ hospital WhatsApp messages sent today. 2) NABH Compliance Engine SaaS at upadhyaymehul9-prog.github.io/nabh-compliance — ₹499 Starter/₹999 Professional/₹2999 Consultant per month, new pricing launched today, 5 real users, 0 paying yet, starting LinkedIn content tomorrow. Give specific content ideas, LinkedIn post angles, WhatsApp message templates, outreach strategies. Be creative and direct.`
+  },
+  {
+    id:'business', icon:'💰', name:'Business & Revenue', desc:'SaaS revenue, pipeline, growth',
+    p:`You are the Business & Revenue Agent for Dr. Mehul Upadhyay. Products: 1) NABH Compliance Engine — ₹499/₹999/₹2999 per month, 5 users, 0 paying, first real consultant user is Soni Ahlawat (NABH consultant, Nagpur). 2) BookMyClinic — 9 free clinics, Founding Partner model. 3) Medicine Reminder Flutter app on Play Store. 4) Hospital KPI Monitor. He needs first paying customer this week. Give brutally direct, specific revenue advice. Priority: convert existing users to paid.`
+  },
+  {
+    id:'hr', icon:'👥', name:'HR & Team', desc:'Staff, training, NABH HR compliance',
+    p:`You are the HR Agent for HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay is Head of Medical Services & Operations. Domain: staff management, NABH-required training records, competency assessments, HR committee meetings, staff performance tracking. Be practical for an Indian hospital pursuing NABH 6th edition accreditation.`
+  },
+  {
+    id:'nabh_saas', icon:'🚀', name:'NABH SaaS Product', desc:'App features, bugs, Play Store',
+    p:`You are the Product Agent for NABH Compliance Engine SaaS by Dr. Mehul Upadhyay. App live at upadhyaymehul9-prog.github.io/nabh-compliance. Stack: React + Supabase (tbptllgcjtiiqspxqcde). Features: 639 scored OEs with tips, 35 clinical & nursing audits, 26 committees, 50 KPIs, calendar planning, statutory license tracker (20 Indian templates), patient tracer (8 types, 120 questions), 13 mock drills, profile screen. Play Store: com.mktech.nabhcompliance "Hospital Accreditation Prep" in closed testing. 5 real users. Pricing: ₹499 Starter/₹999 Professional/₹2999 Consultant. Give specific product, feature prioritization, and growth advice.`
+  }
+];
+
+const CEO_P = `You are the CEO Agent for Dr. Mehul Upadhyay's personal Hospital AI Operating System. He is Head of Medical Services & Operations at HMP Foundation, Ankleshwar, Gujarat (15 yrs experience, NABH Quality Manager, BHMS degree). He is a solo healthcare tech founder building multiple SaaS products: 1) NABH Compliance Engine (live, 5 real users, new pricing ₹499-₹2999/month launched today, 0 paying, 200 hospital WhatsApp outreach messages sent today via ChatMitra). 2) BookMyClinic — 9 free Gujarat clinics onboarded. 3) Medicine Reminder Flutter app (Play Store, production). 4) Hospital KPI Monitor (live on GitHub Pages). He is starting LinkedIn content tomorrow. IIM Kozhikode Healthcare Management & AI program (Batch 9, Oct 2026). When asked to run morning analysis or propose tasks: analyse all departments and propose exactly 5 specific, actionable tasks for today. Format each task strictly as: [dept_id] Task description — dept_id must be one of: quality, operations, marketing, business, hr, nabh_saas. One task per line. Be brutally direct. Think like a sharp business advisor whose #1 goal is getting his first paying customer this week.`;
+
+let apiKey = '';
+let activeDept = null;
+let chatHistory = [];
+let tasks = [];
+
+// Init
+document.getElementById('os-date').textContent = new Date().toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+renderDepts();
+addLog('Hospital AI OS initialised');
+
+function saveKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k.startsWith('AIza')) { alert('Please enter a valid Gemini API key starting with AIza'); return; }
+  apiKey = k;
+  document.getElementById('api-banner').style.display = 'none';
+  const ok = document.getElementById('api-ok');
+  ok.style.display = 'flex';
+  addLog('Gemini API key activated — all agents online');
+}
+
+function clearKey() {
+  apiKey = '';
+  document.getElementById('api-banner').style.display = 'flex';
+  document.getElementById('api-ok').style.display = 'none';
+  document.getElementById('api-key-input').value = '';
+}
+
+function setView(v, btn) {
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('dashboard-view').style.display = v === 'dashboard' ? 'block' : 'none';
+  document.getElementById('chat-view').style.display = v === 'chat' ? 'block' : 'none';
+}
+
+function addLog(txt) {
+  const t = new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  const el = document.getElementById('alog');
+  if (el.querySelector('.alog-empty')) el.innerHTML = '';
+  const d = document.createElement('div');
+  d.className = 'alog-item';
+  d.innerHTML = `<span class="alog-time">${t}</span><span>${txt}</span>`;
+  el.prepend(d);
+  while (el.children.length > 15) el.removeChild(el.lastChild);
+}
+
+function renderDepts() {
+  document.getElementById('dept-grid').innerHTML = DEPTS.map(d => `
+    <div class="dept-card">
+      <div class="dept-card-header">
+        <div class="dept-icon">${d.icon}</div>
+        <div style="flex:1">
+          <div class="dept-name">${d.name}</div>
+          <div class="dept-desc">${d.desc}</div>
+        </div>
+        <div class="dept-status">
+          <span class="sdot" id="dot-${d.id}"></span>
+          <span id="st-${d.id}">Idle</span>
+        </div>
+      </div>
+      <div class="dept-task-text" id="dt-${d.id}">Standing by for tasks...</div>
+      <div class="dept-btns">
+        <button class="dept-open" onclick="openChat('${d.id}')">Open →</button>
+        <button class="dept-chat-btn" onclick="openChat('${d.id}')">Chat</button>
+      </div>
+    </div>`).join('');
+}
+
+function setWorking(id, txt) {
+  const dot = document.getElementById('dot-' + id);
+  const st = document.getElementById('st-' + id);
+  const dt = document.getElementById('dt-' + id);
+  if (dot) dot.className = 'sdot on';
+  if (st) st.textContent = 'Working';
+  if (dt && txt) dt.textContent = txt;
+}
+
+function setIdle(id) {
+  const dot = document.getElementById('dot-' + id);
+  const st = document.getElementById('st-' + id);
+  if (dot) dot.className = 'sdot';
+  if (st) st.textContent = 'Idle';
+}
+
+async function callGemini(systemPrompt, messages) {
+  if (!apiKey) throw new Error('No API key set');
+  const contents = messages.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+  const body = {
+    system_instruction: { parts: [{ text: systemPrompt }] },
+    contents,
+    generationConfig: { maxOutputTokens: 1024, temperature: 0.75 }
+  };
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!resp.ok) {
+    const e = await resp.json();
+    throw new Error(e.error?.message || `API error ${resp.status}`);
+  }
+  const data = await resp.json();
+  return data.candidates[0].content.parts[0].text;
+}
+
+async function runAnalysis() {
+  if (!apiKey) { alert('Please enter your Gemini API key first.'); return; }
+  const btn = document.getElementById('abtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Analysing...';
+  DEPTS.forEach(d => setWorking(d.id, 'Analysing current state...'));
+  addLog('CEO Agent: morning analysis started');
+  try {
+    const text = await callGemini(CEO_P, [{
+      role: 'user',
+      content: 'Run morning analysis now. Propose exactly 5 specific actionable tasks for today. Strict format: [dept_id] Task description. One per line. dept_id from: quality, operations, marketing, business, hr, nabh_saas. Be specific and direct.'
+    }]);
+    const lines = text.split('\n').filter(l => l.trim() && l.includes('['));
+    tasks = lines.map(l => {
+      const m = l.match(/\[(\w+)\]\s*(.*)/);
+      return m ? { dept: m[1].toLowerCase(), text: m[2].trim(), id: Math.random().toString(36).slice(2) } : null;
+    }).filter(Boolean);
+    renderTasks();
+    DEPTS.forEach(d => {
+      const dt = tasks.find(t => t.dept === d.id);
+      if (dt) setWorking(d.id, dt.text);
+      else setIdle(d.id);
+    });
+    addLog(`CEO proposed ${tasks.length} tasks for your approval`);
+  } catch(e) {
+    document.getElementById('task-list').innerHTML = `<div style="color:#f05a5a;font-size:13px;padding:8px 0;">Error: ${e.message}</div>`;
+    DEPTS.forEach(d => setIdle(d.id));
+    addLog('Analysis failed: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = '↺ Re-analyse';
+}
+
+function renderTasks() {
+  const el = document.getElementById('task-list');
+  if (!tasks.length) { el.innerHTML = '<div class="task-empty">No tasks proposed.</div>'; return; }
+  el.innerHTML = tasks.map(t => `
+    <div class="task-item" id="ti-${t.id}">
+      <span class="task-dept-badge badge-${t.dept}">${t.dept}</span>
+      <span class="task-text">${t.text}</span>
+      <button class="task-approve" onclick="approve('${t.id}')">✓ Approve</button>
+      <button class="task-skip" onclick="skip('${t.id}')">Skip</button>
+    </div>`).join('');
+}
+
+function approve(id) {
+  const el = document.getElementById('ti-' + id);
+  if (el) {
+    el.querySelector('.task-approve').textContent = '✓ Done';
+    el.querySelector('.task-approve').disabled = true;
+    el.querySelector('.task-skip').remove();
+    el.style.opacity = '.45';
+  }
+  const t = tasks.find(t => t.id === id);
+  if (t) addLog(`Approved [${t.dept}]: ${t.text.substring(0, 55)}...`);
+}
+
+function skip(id) {
+  const el = document.getElementById('ti-' + id);
+  if (el) el.remove();
+  const t = tasks.find(t => t.id === id);
+  if (t) { setIdle(t.dept); addLog(`Skipped [${t.dept}] task`); }
+  tasks = tasks.filter(x => x.id !== id);
+}
+
+function openChat(deptId) {
+  if (deptId === 'ceo') {
+    activeDept = { id:'ceo', icon:'🧠', name:'CEO Agent', desc:'All operations · Proposes tasks · You approve', p: CEO_P };
+  } else {
+    activeDept = DEPTS.find(d => d.id === deptId);
+  }
+  if (!activeDept) return;
+  chatHistory = [];
+  document.getElementById('ch-icon').textContent = activeDept.icon;
+  document.getElementById('ch-name').textContent = activeDept.name;
+  document.getElementById('ch-desc').textContent = activeDept.desc;
+  document.getElementById('chat-msgs').innerHTML = `<div class="msg agent">Dr. Mehul, ${activeDept.name} online. What do you need?</div>`;
+  setView('chat');
+  document.querySelectorAll('.vbtn').forEach((b, i) => { b.classList.remove('active'); if (i === 1) b.classList.add('active'); });
+  setTimeout(() => document.getElementById('chat-inp').focus(), 100);
+}
+
+function goBack() {
+  setView('dashboard');
+  document.querySelectorAll('.vbtn').forEach((b, i) => { b.classList.remove('active'); if (i === 0) b.classList.add('active'); });
+}
+
+async function sendMsg() {
+  if (!activeDept) return;
+  const inp = document.getElementById('chat-inp');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  if (!apiKey) { alert('Please enter your Gemini API key first.'); return; }
+  inp.value = '';
+  const ms = document.getElementById('chat-msgs');
+  ms.innerHTML += `<div class="msg user">${msg.replace(/</g,'&lt;')}</div>`;
+  const ld = document.createElement('div');
+  ld.className = 'msg loading';
+  ld.textContent = 'Thinking...';
+  ms.appendChild(ld);
+  ms.scrollTop = ms.scrollHeight;
+  chatHistory.push({ role: 'user', content: msg });
+  try {
+    const reply = await callGemini(activeDept.p, chatHistory);
+    chatHistory.push({ role: 'assistant', content: reply });
+    ld.remove();
+    const fmt = reply
+      .replace(/</g, '&lt;')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    ms.innerHTML += `<div class="msg agent"><p>${fmt}</p></div>`;
+    if (activeDept.id !== 'ceo') setWorking(activeDept.id, msg.substring(0, 60) + '...');
+    addLog(`${activeDept.name}: responded`);
+  } catch(e) {
+    ld.textContent = `Error: ${e.message}`;
+  }
+  ms.scrollTop = ms.scrollHeight;
+}
+</script>
+</body>
+</html>
