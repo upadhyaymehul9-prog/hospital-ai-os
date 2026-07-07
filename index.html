@@ -52,6 +52,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .api-ok{padding:.625rem 1.5rem;background:rgba(52,199,123,0.08);border-bottom:1px solid rgba(52,199,123,0.15);font-size:12px;color:var(--green);display:none;align-items:center;gap:8px;flex-wrap:wrap;}
 .api-ok-change{font-size:11px;margin-left:auto;padding:3px 10px;border-radius:6px;border:1px solid rgba(52,199,123,0.3);background:transparent;color:var(--green);cursor:pointer;font-family:'DM Sans',sans-serif;}
 
+.login-banner{padding:.875rem 1.5rem;background:rgba(155,125,234,0.08);border-bottom:1px solid rgba(155,125,234,0.15);}
+.login-banner.connected{background:rgba(52,199,123,0.08);border-color:rgba(52,199,123,0.15);}
+.login-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.login-label{font-size:12px;color:var(--purple);font-weight:600;min-width:100px;}
+.login-banner.connected .login-label{color:var(--green);}
+.login-hint{font-size:11px;color:var(--text3);margin-top:6px;}
+
+.actions-section{background:var(--bg2);border:1px solid rgba(245,166,35,0.2);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;}
+.actions-title{font-size:10px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.action-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);margin-bottom:6px;font-size:12px;}
+.action-label{flex:1;color:var(--text);}
+.action-approve{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(52,199,123,0.4);color:var(--green);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.action-reject{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text3);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.action-done{opacity:.5;font-size:12px;color:var(--green);}
+.agent-badge{font-size:10px;padding:3px 8px;border-radius:99px;background:rgba(52,199,123,0.15);color:var(--green);font-weight:600;}
+
 .dashboard{padding:1.5rem;}
 .ceo-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;}
 .ceo-header{display:flex;align-items:center;gap:14px;margin-bottom:1rem;}
@@ -181,13 +197,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="api-ok-change" onclick="clearConfig()">Change settings</button>
 </div>
 
+<div id="login-banner" class="login-banner">
+  <div class="login-row">
+    <span class="login-label">🔗 AccredReady:</span>
+    <input type="email" class="api-input" id="login-email" placeholder="Your AccredReady email" style="max-width:200px;" />
+    <input type="password" class="api-input" id="login-pass" placeholder="Password" style="max-width:160px;" />
+    <button class="api-activate" onclick="doLogin()">Connect Real Agent</button>
+    <a class="api-link" href="https://accredready.in" target="_blank">accredready.in →</a>
+  </div>
+  <div class="login-hint">Login with your AccredReady account to let agents read &amp; update your real NABH data (scores, CAPA, licenses, KPIs). Write actions need your approval.</div>
+</div>
+<div id="login-ok" class="login-banner connected" style="display:none;">
+  <div class="login-row">
+    <span class="login-label">✓ Connected:</span>
+    <span id="login-hospital" style="font-size:13px;color:var(--text);"></span>
+    <span class="agent-badge">REAL AGENT</span>
+    <button class="api-ok-change" onclick="doLogout()" style="margin-left:auto;">Disconnect</button>
+  </div>
+</div>
+
 <div id="dashboard-view" class="dashboard">
+
+  <div id="actions-panel" class="actions-section" style="display:none;">
+    <div class="actions-title">⚡ Pending Actions — Approve to execute in AccredReady</div>
+    <div id="actions-list"></div>
+  </div>
   <div class="ceo-card">
     <div class="ceo-header">
       <div class="ceo-avatar">🧠</div>
       <div class="ceo-info">
         <div class="ceo-name">CEO Agent</div>
-        <div class="ceo-desc">Analyses AccredReady operations · Proposes tasks · You approve everything</div>
+        <div class="ceo-desc">Real agent — reads your AccredReady data · Executes actions you approve</div>
       </div>
       <div class="ceo-actions">
         <button class="btn-chat-ceo" onclick="openChat('ceo')">Chat with CEO</button>
@@ -222,6 +262,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="agent.js"></script>
 <script>
 const PROVIDERS = {
   ollama: {
@@ -311,6 +353,87 @@ renderDepts();
 addLog('AccredReady AI OS initialised');
 loadConfig();
 onProviderChange();
+initRealAgent();
+
+function initRealAgent() {
+  AccredAgent.initAgent({
+    onActionUpdate: renderActions,
+    onLog: addLog
+  });
+  AccredAgent.restoreSession().then(ctx => {
+    if (ctx) showLoginOk(ctx);
+  }).catch(() => {});
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) { alert('Enter your AccredReady email and password'); return; }
+  try {
+    const ctx = await AccredAgent.loginAccredReady(email, pass);
+    showLoginOk(ctx);
+    addLog(`Real agent connected to ${ctx.hospitalName}`);
+  } catch (e) {
+    alert('Login failed: ' + e.message);
+  }
+}
+
+function showLoginOk(ctx) {
+  document.getElementById('login-banner').style.display = 'none';
+  document.getElementById('login-ok').style.display = 'block';
+  document.getElementById('login-hospital').textContent =
+    `${ctx.hospitalName} · ${ctx.assessmentName}`;
+  document.querySelector('.logo-sub').textContent =
+    `Real Agent · ${ctx.hospitalName}`;
+}
+
+async function doLogout() {
+  await AccredAgent.logoutAccredReady();
+  document.getElementById('login-banner').style.display = 'block';
+  document.getElementById('login-ok').style.display = 'none';
+  document.getElementById('actions-panel').style.display = 'none';
+  document.querySelector('.logo-sub').textContent = 'NABH Compliance Engine · Dr. Mehul Upadhyay';
+  addLog('Disconnected from AccredReady');
+}
+
+function renderActions(actions) {
+  const panel = document.getElementById('actions-panel');
+  const list = document.getElementById('actions-list');
+  const pending = actions.filter(a => a.status === 'pending');
+  if (!actions.length) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  list.innerHTML = actions.map(a => {
+    if (a.status === 'pending') {
+      return `<div class="action-item">
+        <span class="action-label">${a.label}</span>
+        <button class="action-approve" onclick="approveAction('${a.id}')">✓ Approve</button>
+        <button class="action-reject" onclick="rejectAction('${a.id}')">Skip</button>
+      </div>`;
+    }
+    const cls = a.status === 'done' ? 'action-done' : 'action-label';
+    const icon = a.status === 'done' ? '✓' : a.status === 'failed' ? '✗' : '—';
+    return `<div class="action-item ${cls}"><span>${icon} ${a.label}</span></div>`;
+  }).join('');
+}
+
+async function approveAction(id) {
+  try {
+    await AccredAgent.approveAction(id);
+    renderActions(AccredAgent.getPendingActions());
+  } catch (e) {
+    alert('Action failed: ' + e.message);
+    renderActions(AccredAgent.getPendingActions());
+  }
+}
+
+function rejectAction(id) {
+  AccredAgent.rejectAction(id);
+  renderActions(AccredAgent.getPendingActions());
+}
+
+function isRealAgent() {
+  return AccredAgent.getContext() && aiConfig.active && aiConfig.provider === 'groq';
+}
 
 function loadConfig() {
   try {
@@ -611,38 +734,46 @@ async function callLLM(systemPrompt, messages) {
 }
 
 async function runAnalysis() {
-  if (!aiConfig.active) { alert('Please configure an AI provider first.'); return; }
+  if (!aiConfig.active) { alert('Please configure Groq API key first.'); return; }
+  if (!AccredAgent.getContext()) { alert('Connect your AccredReady account first (login above) for real analysis.'); return; }
+
   const btn = document.getElementById('abtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Analysing...';
-  DEPTS.forEach(d => setWorking(d.id, 'Analysing current state...'));
-  addLog('CEO Agent: morning analysis started');
+  btn.innerHTML = '<span class="spin"></span> Analysing real data...';
+  DEPTS.forEach(d => setWorking(d.id, 'Reading AccredReady data...'));
+  addLog('CEO Agent: analysing real AccredReady data');
+
   try {
-    const text = await callLLM(CEO_P, [{
-      role: 'user',
-      content: `Today is ${new Date().toLocaleDateString('en-IN')}. Propose exactly 5 actionable tasks for AccredReady today.
+    const ctx = AccredAgent.getContext();
+    const prompt = `You are the CEO Agent for ${ctx.hospitalName}. Use your tools NOW to:
+1. get_hospital_summary
+2. get_compliance_status  
+3. get_active_gaps
+4. get_expiring_licenses
 
-Reply with ONLY 5 lines in this exact format (no numbers, no bullets, no extra text):
-[quality] task here
-[operations] task here
-[marketing] task here
-[business] task here
-[hr] task here
+Then propose exactly 5 specific tasks for today based on REAL data. Format each line:
+[dept_id] Task description
+dept_id: quality, operations, marketing, business, hr, or nabh_saas`;
 
-Use dept_id exactly: quality, operations, marketing, business, hr, or nabh_saas. Be specific and direct.`
-    }]);
-    tasks = parseTasks(text);
+    const { reply } = await AccredAgent.runAgent(
+      aiConfig.apiKey, aiConfig.model,
+      [{ role: 'user', content: prompt }],
+      AccredAgent.AGENT_SYSTEM + '\n\n' + CEO_P
+    );
+
+    tasks = parseTasks(reply);
     renderTasks();
     if (!tasks.length) {
       document.getElementById('task-list').innerHTML =
-        `<div style="color:#f5a623;font-size:13px;padding:8px 0;">Could not parse tasks. Try Re-analyse, or use Chat with CEO.<br><span style="color:var(--text3);font-size:11px;">AI said: ${text.substring(0, 120).replace(/</g,'&lt;')}...</span></div>`;
+        `<div style="font-size:13px;padding:8px 0;color:var(--text);">${formatReply(reply)}</div>`;
     }
     DEPTS.forEach(d => {
       const dt = tasks.find(t => t.dept === d.id);
       if (dt) setWorking(d.id, dt.text);
       else setIdle(d.id);
     });
-    addLog(tasks.length ? `CEO proposed ${tasks.length} tasks` : 'CEO analysis done — no tasks parsed, try again');
+    renderActions(AccredAgent.getPendingActions());
+    addLog(tasks.length ? `CEO proposed ${tasks.length} real-data tasks` : 'CEO analysis complete');
   } catch(e) {
     document.getElementById('task-list').innerHTML = `<div style="color:#f05a5a;font-size:13px;padding:8px 0;">Error: ${e.message}</div>`;
     DEPTS.forEach(d => setIdle(d.id));
@@ -651,6 +782,13 @@ Use dept_id exactly: quality, operations, marketing, business, hr, or nabh_saas.
     btn.disabled = false;
     btn.innerHTML = '<span>⚡</span> Re-analyse';
   }
+}
+
+function formatReply(text) {
+  return (text || '')
+    .replace(/</g, '&lt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
 }
 
 function renderTasks() {
@@ -696,7 +834,9 @@ function openChat(deptId) {
   document.getElementById('ch-icon').textContent = activeDept.icon;
   document.getElementById('ch-name').textContent = activeDept.name;
   document.getElementById('ch-desc').textContent = activeDept.desc;
-  document.getElementById('chat-msgs').innerHTML = `<div class="msg agent">Dr. Mehul, ${activeDept.name} online. What do you need?</div>`;
+  document.getElementById('chat-msgs').innerHTML = isRealAgent()
+    ? `<div class="msg agent">${activeDept.name} connected to your real AccredReady data. Ask me to check gaps, score OEs, create CAPA, or review licenses.</div>`
+    : `<div class="msg agent">Dr. Mehul, ${activeDept.name} online. Connect AccredReady login for real agent mode.</div>`;
   setView('chat');
   document.querySelectorAll('.vbtn').forEach((b, i) => { b.classList.remove('active'); if (i === 1) b.classList.add('active'); });
   setTimeout(() => document.getElementById('chat-inp').focus(), 100);
@@ -712,29 +852,34 @@ async function sendMsg() {
   const inp = document.getElementById('chat-inp');
   const msg = inp.value.trim();
   if (!msg) return;
-  if (!aiConfig.active) { alert('Please configure an AI provider first.'); return; }
+  if (!aiConfig.active) { alert('Please configure Groq API key first.'); return; }
   inp.value = '';
   const ms = document.getElementById('chat-msgs');
   ms.innerHTML += `<div class="msg user">${msg.replace(/</g,'&lt;')}</div>`;
   const ld = document.createElement('div');
   ld.className = 'msg loading';
-  ld.textContent = 'Thinking...';
+  ld.textContent = isRealAgent() ? 'Running tools on AccredReady...' : 'Thinking...';
   ms.appendChild(ld);
   ms.scrollTop = ms.scrollHeight;
   chatHistory.push({ role: 'user', content: msg });
   try {
-    const reply = await callLLM(activeDept.p, chatHistory);
+    let reply;
+    if (isRealAgent()) {
+      const system = AccredAgent.AGENT_SYSTEM + '\n\n' + activeDept.p;
+      const cleanHistory = chatHistory.filter(m => m.role === 'user' || m.role === 'assistant');
+      const { reply: agentReply } = await AccredAgent.runAgent(
+        aiConfig.apiKey, aiConfig.model, cleanHistory, system
+      );
+      reply = agentReply;
+      renderActions(AccredAgent.getPendingActions());
+    } else {
+      reply = await callLLM(activeDept.p, chatHistory);
+    }
     chatHistory.push({ role: 'assistant', content: reply });
     ld.remove();
-    const fmt = reply
-      .replace(/</g, '&lt;')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>');
-    ms.innerHTML += `<div class="msg agent"><p>${fmt}</p></div>`;
+    ms.innerHTML += `<div class="msg agent"><p>${formatReply(reply)}</p></div>`;
     if (activeDept.id !== 'ceo') setWorking(activeDept.id, msg.substring(0, 60) + '...');
-    addLog(`${activeDept.name}: responded`);
+    addLog(`${activeDept.name}: ${isRealAgent() ? 'executed real agent' : 'responded'}`);
   } catch(e) {
     ld.textContent = `Error: ${e.message}`;
   }
