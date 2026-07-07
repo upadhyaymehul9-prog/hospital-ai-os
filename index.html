@@ -444,8 +444,45 @@ function setWorking(id, txt) {
 function setIdle(id) {
   const dot = document.getElementById('dot-' + id);
   const st = document.getElementById('st-' + id);
+  const dt = document.getElementById('dt-' + id);
   if (dot) dot.className = 'sdot';
   if (st) st.textContent = 'Idle';
+  if (dt) dt.textContent = 'Standing by for tasks...';
+}
+
+const DEPT_ALIASES = {
+  quality: 'quality', operations: 'operations', marketing: 'marketing',
+  business: 'business', hr: 'hr', human_resources: 'hr',
+  nabh_saas: 'nabh_saas', nabh: 'nabh_saas', saas: 'nabh_saas',
+  product: 'nabh_saas', accredready: 'nabh_saas'
+};
+const VALID_DEPTS = new Set(DEPTS.map(d => d.id));
+
+function parseTasks(text) {
+  const found = [];
+  const seen = new Set();
+  for (const line of text.split('\n')) {
+    const cleaned = line.replace(/^\s*[-*•]\s*/, '').replace(/\*\*/g, '').trim();
+    if (!cleaned) continue;
+    const patterns = [
+      /\[([a-z_]+)\]\s*:?\s*(.+)/i,
+      /^\d+[\.\)]\s*\[([a-z_]+)\]\s*:?\s*(.+)/i,
+      /^\d+[\.\)]\s*([a-z_]+)\s*[-:–]\s*(.+)/i,
+      /^([a-z_]+)\s*[-:–]\s*(.+)/i
+    ];
+    for (const re of patterns) {
+      const m = cleaned.match(re);
+      if (!m) continue;
+      const rawDept = m[1].toLowerCase();
+      const dept = DEPT_ALIASES[rawDept] || rawDept;
+      if (!VALID_DEPTS.has(dept) || seen.has(dept)) break;
+      seen.add(dept);
+      found.push({ dept, text: m[2].trim(), id: Math.random().toString(36).slice(2) });
+      break;
+    }
+    if (found.length >= 5) break;
+  }
+  return found;
 }
 
 function buildMessages(systemPrompt, messages) {
@@ -482,13 +519,18 @@ async function callOpenAICompatible(endpoint, systemPrompt, messages, extraHeade
     body: JSON.stringify({
       model: aiConfig.model,
       messages: buildMessages(systemPrompt, messages),
-      max_tokens: 1024,
-      temperature: 0.75
+      max_tokens: 2048,
+      temperature: 0.7
     })
   });
   const data = await resp.json();
-  if (!resp.ok) throw new Error(data.error?.message || data.error || `API error ${resp.status}`);
-  return data.choices[0].message.content;
+  if (!resp.ok) {
+    const msg = data.error?.message || data.error || `API error ${resp.status}`;
+    throw new Error(msg);
+  }
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) throw new Error('Empty response from AI — try Re-analyse');
+  return content;
 }
 
 async function callGemini(systemPrompt, messages) {
@@ -578,27 +620,37 @@ async function runAnalysis() {
   try {
     const text = await callLLM(CEO_P, [{
       role: 'user',
-      content: 'Run morning analysis now. Propose exactly 5 specific actionable tasks for today. Strict format: [dept_id] Task description. One per line. dept_id from: quality, operations, marketing, business, hr, nabh_saas. Be specific and direct.'
+      content: `Today is ${new Date().toLocaleDateString('en-IN')}. Propose exactly 5 actionable tasks for AccredReady today.
+
+Reply with ONLY 5 lines in this exact format (no numbers, no bullets, no extra text):
+[quality] task here
+[operations] task here
+[marketing] task here
+[business] task here
+[hr] task here
+
+Use dept_id exactly: quality, operations, marketing, business, hr, or nabh_saas. Be specific and direct.`
     }]);
-    const lines = text.split('\n').filter(l => l.trim() && l.includes('['));
-    tasks = lines.map(l => {
-      const m = l.match(/\[(\w+)\]\s*(.*)/);
-      return m ? { dept: m[1].toLowerCase(), text: m[2].trim(), id: Math.random().toString(36).slice(2) } : null;
-    }).filter(Boolean);
+    tasks = parseTasks(text);
     renderTasks();
+    if (!tasks.length) {
+      document.getElementById('task-list').innerHTML =
+        `<div style="color:#f5a623;font-size:13px;padding:8px 0;">Could not parse tasks. Try Re-analyse, or use Chat with CEO.<br><span style="color:var(--text3);font-size:11px;">AI said: ${text.substring(0, 120).replace(/</g,'&lt;')}...</span></div>`;
+    }
     DEPTS.forEach(d => {
       const dt = tasks.find(t => t.dept === d.id);
       if (dt) setWorking(d.id, dt.text);
       else setIdle(d.id);
     });
-    addLog(`CEO proposed ${tasks.length} tasks for your approval`);
+    addLog(tasks.length ? `CEO proposed ${tasks.length} tasks` : 'CEO analysis done — no tasks parsed, try again');
   } catch(e) {
     document.getElementById('task-list').innerHTML = `<div style="color:#f05a5a;font-size:13px;padding:8px 0;">Error: ${e.message}</div>`;
     DEPTS.forEach(d => setIdle(d.id));
     addLog('Analysis failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>⚡</span> Re-analyse';
   }
-  btn.disabled = false;
-  btn.innerHTML = '↺ Re-analyse';
 }
 
 function renderTasks() {
