@@ -151,7 +151,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </head>
 <body>
 
-<div class="header">
+<div id="github-redirect" style="display:none;padding:.6rem 1.5rem;background:rgba(245,166,35,0.12);border-bottom:1px solid rgba(245,166,35,0.2);font-size:12px;color:#f5c35a;text-align:center;">
+  For best login experience use: <a href="https://accredready.in/ai-os/" style="color:#3ecfb2;font-weight:600;">accredready.in/ai-os</a> (same domain as your app)
+</div>
   <div class="logo">
     <div class="logo-icon">✓</div>
     <div>
@@ -778,6 +780,10 @@ let chatHistory = [];
 let tasks = [];
 
 document.getElementById('os-date').textContent = new Date().toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+if (location.hostname.includes('github.io')) {
+  const rd = document.getElementById('github-redirect');
+  if (rd) rd.style.display = 'block';
+}
 if (IS_LIVE) {
   document.getElementById('opt-ollama').style.display = 'none';
   document.getElementById('provider-select').value = 'groq';
