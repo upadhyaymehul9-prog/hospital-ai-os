@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hospital AI OS — Dr. Mehul Upadhyay</title>
+<title>AccredReady AI OS — NABH Hospital Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -16,8 +16,8 @@
   --text: #e8eaf0;
   --text2: #8b909e;
   --text3: #555b6a;
-  --accent: #4f9cf9;
-  --accent2: #3d7fd4;
+  --accent: #3ecfb2;
+  --accent2: #2db89e;
   --green: #34c77b;
   --amber: #f5a623;
   --red: #f05a5a;
@@ -27,10 +27,9 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-/* HEADER */
 .header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(10,12,15,0.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
 .logo{display:flex;align-items:center;gap:12px;}
-.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1a6bdb,#4f9cf9);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1a8a6e,#3ecfb2);display:flex;align-items:center;justify-content:center;font-size:18px;}
 .logo-text{font-size:16px;font-weight:600;color:var(--text);}
 .logo-sub{font-size:11px;color:var(--text3);margin-top:1px;}
 .header-right{display:flex;align-items:center;gap:12px;}
@@ -39,29 +38,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .vbtn{font-size:12px;padding:5px 14px;border-radius:6px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .vbtn.active{background:var(--bg4);color:var(--text);font-weight:500;}
 
-/* API BANNER */
-.api-banner{padding:.875rem 1.5rem;background:rgba(79,156,249,0.08);border-bottom:1px solid rgba(79,156,249,0.15);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.api-banner-label{font-size:12px;color:var(--accent);font-weight:500;white-space:nowrap;}
-.api-input{flex:1;min-width:200px;font-size:12px;padding:7px 12px;border-radius:7px;border:1px solid rgba(79,156,249,0.25);background:rgba(79,156,249,0.05);color:var(--text);font-family:'DM Mono',monospace;outline:none;}
-.api-input:focus{border-color:rgba(79,156,249,0.5);}
-.api-activate{font-size:12px;padding:7px 18px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.api-banner{padding:.875rem 1.5rem;background:rgba(62,207,178,0.08);border-bottom:1px solid rgba(62,207,178,0.15);}
+.api-banner-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.api-banner-row:last-child{margin-bottom:0;}
+.api-banner-label{font-size:12px;color:var(--accent);font-weight:500;white-space:nowrap;min-width:90px;}
+.api-select{font-size:12px;padding:7px 10px;border-radius:7px;border:1px solid rgba(62,207,178,0.25);background:rgba(62,207,178,0.05);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;}
+.api-input{flex:1;min-width:160px;font-size:12px;padding:7px 12px;border-radius:7px;border:1px solid rgba(62,207,178,0.25);background:rgba(62,207,178,0.05);color:var(--text);font-family:'DM Mono',monospace;outline:none;}
+.api-input:focus,.api-select:focus{border-color:rgba(62,207,178,0.5);}
+.api-activate{font-size:12px;padding:7px 18px;border-radius:7px;border:none;background:var(--accent);color:#0a0c0f;cursor:pointer;font-weight:600;font-family:'DM Sans',sans-serif;transition:background .15s;}
 .api-activate:hover{background:var(--accent2);}
-.api-link{font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline;white-space:nowrap;opacity:.8;}
-.api-ok{padding:.625rem 1.5rem;background:rgba(52,199,123,0.08);border-bottom:1px solid rgba(52,199,123,0.15);font-size:12px;color:var(--green);display:none;align-items:center;gap:8px;}
+.api-link{font-size:11px;color:var(--accent);text-decoration:underline;white-space:nowrap;opacity:.85;}
+.api-hint{font-size:11px;color:var(--text3);line-height:1.5;padding-top:4px;}
+.api-ok{padding:.625rem 1.5rem;background:rgba(52,199,123,0.08);border-bottom:1px solid rgba(52,199,123,0.15);font-size:12px;color:var(--green);display:none;align-items:center;gap:8px;flex-wrap:wrap;}
 .api-ok-change{font-size:11px;margin-left:auto;padding:3px 10px;border-radius:6px;border:1px solid rgba(52,199,123,0.3);background:transparent;color:var(--green);cursor:pointer;font-family:'DM Sans',sans-serif;}
 
-/* DASHBOARD */
 .dashboard{padding:1.5rem;}
-
-/* CEO CARD */
 .ceo-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;}
 .ceo-header{display:flex;align-items:center;gap:14px;margin-bottom:1rem;}
-.ceo-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#2d1f6b,#6b4ef9);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ceo-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a4a3a,#3ecfb2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .ceo-info{flex:1;}
 .ceo-name{font-size:15px;font-weight:600;color:var(--text);}
 .ceo-desc{font-size:12px;color:var(--text3);margin-top:2px;}
-.ceo-actions{display:flex;gap:8px;}
-.btn-run{display:flex;align-items:center;gap:6px;font-size:13px;padding:8px 18px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.ceo-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-run{display:flex;align-items:center;gap:6px;font-size:13px;padding:8px 18px;border-radius:8px;border:none;background:var(--accent);color:#0a0c0f;cursor:pointer;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .btn-run:hover{background:var(--accent2);}
 .btn-run:disabled{opacity:.5;cursor:not-allowed;}
 .btn-chat-ceo{font-size:13px;padding:8px 18px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
@@ -75,7 +74,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .task-approve:hover{background:rgba(52,199,123,0.1);}
 .task-skip{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text3);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 
-/* DEPT GRID */
 .dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:1.5rem;}
 .dept-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.125rem;transition:border-color .2s;}
 .dept-card:hover{border-color:var(--border2);}
@@ -93,7 +91,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dept-chat-btn{font-size:12px;padding:7px 14px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .dept-chat-btn:hover{background:var(--bg3);}
 
-/* ACTIVITY LOG */
 .alog-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;}
 .alog-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
 .alog-item{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3);}
@@ -101,7 +98,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .alog-time{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);min-width:50px;flex-shrink:0;}
 .alog-empty{font-size:12px;color:var(--text3);}
 
-/* CHAT VIEW */
 .chat-view{padding:1.5rem;display:none;}
 .chat-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
 .chat-icon{font-size:22px;}
@@ -111,19 +107,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .chat-messages{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;min-height:280px;max-height:420px;overflow-y:auto;margin-bottom:1rem;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;}
 .msg{max-width:85%;line-height:1.55;font-size:13px;border-radius:10px;padding:10px 14px;}
 .msg.user{align-self:flex-end;background:var(--bg4);border:1px solid var(--border2);color:var(--text);}
-.msg.agent{align-self:flex-start;background:rgba(79,156,249,0.1);border:1px solid rgba(79,156,249,0.2);color:#c8dcff;}
+.msg.agent{align-self:flex-start;background:rgba(62,207,178,0.1);border:1px solid rgba(62,207,178,0.2);color:#c8fff5;}
 .msg.loading{align-self:flex-start;color:var(--text3);font-style:italic;background:transparent;border:none;padding:0;}
 .chat-input-row{display:flex;gap:10px;}
 .chat-input{flex:1;font-size:13px;padding:10px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
-.chat-input:focus{border-color:rgba(79,156,249,0.4);}
-.chat-send{font-size:13px;padding:10px 22px;border-radius:9px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.chat-input:focus{border-color:rgba(62,207,178,0.4);}
+.chat-send{font-size:13px;padding:10px 22px;border-radius:9px;border:none;background:var(--accent);color:#0a0c0f;cursor:pointer;font-weight:600;font-family:'DM Sans',sans-serif;transition:background .15s;}
 .chat-send:hover{background:var(--accent2);}
 
-/* SPINNER */
-.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite;}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,0.2);border-top-color:#0a0c0f;border-radius:50%;animation:sp .65s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
 
-/* DEPT BADGE COLORS */
 .badge-quality{background:rgba(79,156,249,0.15);color:#7ab8fb;}
 .badge-operations{background:rgba(52,199,123,0.15);color:#52e49a;}
 .badge-marketing{background:rgba(245,166,35,0.15);color:#f5c35a;}
@@ -131,11 +125,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .badge-hr{background:rgba(155,125,234,0.15);color:#c4aef9;}
 .badge-nabh_saas{background:rgba(62,207,178,0.15);color:#5eecd4;}
 
-/* ANIMATIONS */
+#key-row,#model-row,#url-row{display:none;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .dept-card,.ceo-card,.alog-section{animation:fadeIn .3s ease both;}
-
-/* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
@@ -145,10 +137,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <div class="header">
   <div class="logo">
-    <div class="logo-icon">🏥</div>
+    <div class="logo-icon">✓</div>
     <div>
-      <div class="logo-text">Hospital AI OS</div>
-      <div class="logo-sub">Dr. Mehul Upadhyay · HMP Foundation</div>
+      <div class="logo-text">AccredReady AI OS</div>
+      <div class="logo-sub">NABH Compliance Engine · Dr. Mehul Upadhyay</div>
     </div>
   </div>
   <div class="header-right">
@@ -161,25 +153,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <div id="api-banner" class="api-banner">
-  <span class="api-banner-label">🔑 Gemini API Key (Free):</span>
-  <input type="password" class="api-input" id="api-key-input" placeholder="AIzaSy..." />
-  <button class="api-activate" onclick="saveKey()">Activate Agents</button>
-  <a class="api-link" href="https://aistudio.google.com/app/apikey" target="_blank">Get free key →</a>
+  <div class="api-banner-row">
+    <span class="api-banner-label">AI Provider:</span>
+    <select class="api-select" id="provider-select" onchange="onProviderChange()">
+      <option value="ollama">Ollama (Free, Local)</option>
+      <option value="gemini">Google Gemini (Free tier)</option>
+      <option value="groq">Groq (Free tier)</option>
+      <option value="openrouter">OpenRouter (Free models)</option>
+      <option value="huggingface">Hugging Face (Free tier)</option>
+    </select>
+    <input type="text" class="api-input" id="model-input" placeholder="Model name" style="max-width:220px;" />
+    <button class="api-activate" onclick="saveConfig()">Activate Agents</button>
+  </div>
+  <div class="api-banner-row" id="key-row">
+    <span class="api-banner-label">API Key:</span>
+    <input type="password" class="api-input" id="api-key-input" placeholder="Your API key" />
+    <a class="api-link" id="key-link" href="#" target="_blank">Get free key →</a>
+  </div>
+  <div class="api-banner-row" id="url-row">
+    <span class="api-banner-label">Server URL:</span>
+    <input type="text" class="api-input" id="url-input" placeholder="http://localhost:3000" />
+  </div>
+  <div class="api-hint" id="provider-hint"></div>
 </div>
 <div id="api-ok" class="api-ok">
-  ✓ Gemini API active — all 6 agents ready &nbsp;|&nbsp; Free tier: 1,500 requests/day
-  <button class="api-ok-change" onclick="clearKey()">Change key</button>
+  <span id="api-ok-text">✓ AI active — all agents ready</span>
+  <button class="api-ok-change" onclick="clearConfig()">Change settings</button>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashboard-view" class="dashboard">
-
   <div class="ceo-card">
     <div class="ceo-header">
       <div class="ceo-avatar">🧠</div>
       <div class="ceo-info">
         <div class="ceo-name">CEO Agent</div>
-        <div class="ceo-desc">Analyses all operations · Proposes tasks · You approve everything</div>
+        <div class="ceo-desc">Analyses AccredReady operations · Proposes tasks · You approve everything</div>
       </div>
       <div class="ceo-actions">
         <button class="btn-chat-ceo" onclick="openChat('ceo')">Chat with CEO</button>
@@ -191,16 +199,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="task-queue-label">Task Queue</div>
     <div id="task-list"><div class="task-empty">No tasks yet. Run analysis to get AI-proposed tasks for today.</div></div>
   </div>
-
   <div class="dept-grid" id="dept-grid"></div>
-
   <div class="alog-section">
     <div class="alog-title">Activity Log</div>
     <div id="alog"><div class="alog-empty">System initialised.</div></div>
   </div>
 </div>
 
-<!-- CHAT VIEW -->
 <div id="chat-view" class="chat-view">
   <div class="chat-header">
     <div class="chat-icon" id="ch-icon">🧠</div>
@@ -218,60 +223,154 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <script>
+const PROVIDERS = {
+  ollama: {
+    name: 'Ollama',
+    needsKey: false,
+    needsUrl: true,
+    defaultModel: 'llama3.2',
+    defaultUrl: window.location.origin,
+    hint: '100% free, runs on your PC. Install Ollama → run <code>ollama pull llama3.2</code> → start server with <code>npm start</code>. Server URL defaults to this page origin (proxy handles CORS).',
+    keyLink: 'https://ollama.com/download'
+  },
+  gemini: {
+    name: 'Google Gemini',
+    needsKey: true,
+    needsUrl: false,
+    defaultModel: 'gemini-2.0-flash',
+    hint: 'Free tier: ~1,500 requests/day. Get key at Google AI Studio.',
+    keyLink: 'https://aistudio.google.com/app/apikey'
+  },
+  groq: {
+    name: 'Groq',
+    needsKey: true,
+    needsUrl: false,
+    defaultModel: 'llama-3.3-70b-versatile',
+    hint: 'Free tier, very fast inference. Models: llama-3.3-70b-versatile, mixtral-8x7b-32768.',
+    keyLink: 'https://console.groq.com/keys'
+  },
+  openrouter: {
+    name: 'OpenRouter',
+    needsKey: true,
+    needsUrl: false,
+    defaultModel: 'meta-llama/llama-3.2-3b-instruct:free',
+    hint: 'Free models available (suffix :free). Also: google/gemma-2-9b-it:free, qwen/qwen-2-7b-instruct:free.',
+    keyLink: 'https://openrouter.ai/keys'
+  },
+  huggingface: {
+    name: 'Hugging Face',
+    needsKey: true,
+    needsUrl: false,
+    defaultModel: 'meta-llama/Llama-3.2-3B-Instruct',
+    hint: 'Free Inference API tier. Create token at huggingface.co/settings/tokens (read access).',
+    keyLink: 'https://huggingface.co/settings/tokens'
+  }
+};
+
 const DEPTS = [
   {
     id:'quality', icon:'🏥', name:'Quality & NABH', desc:'OEs, audits, KPIs, drills',
-    p:`You are the Quality & NABH Agent for HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay (Head of Medical Services & Operations, NABH Quality Manager, 15 yrs experience) is your director. Domain: NABH 6th edition compliance, 639 OEs scoring, 35 clinical & nursing audits, 26 committees, 50 KPIs, 13 mock drills, statutory license tracker, patient tracer tool. Give specific, actionable advice. Be direct and practical. No vague answers.`
+    p:`You are the Quality & NABH Agent for AccredReady (NABH Compliance Engine) and HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay (Head of Medical Services & Operations, NABH Quality Manager, 15 yrs experience) is your director. Domain: NABH 6th edition compliance, 639 OEs scoring, 35 clinical & nursing audits, 26 committees, 50 KPIs, 13 mock drills, statutory license tracker, patient tracer tool. Give specific, actionable advice. Be direct and practical. No vague answers.`
   },
   {
     id:'operations', icon:'⚙️', name:'Operations', desc:'OPD, IPD, drills, facilities',
-    p:`You are the Operations Agent for HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay is director. Domain: daily hospital operations, OPD management, IPD management, mock drills scheduling, statutory license renewals, patient tracers, facility management. Give actionable, specific advice. Be direct.`
+    p:`You are the Operations Agent for AccredReady and HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay is director. Domain: daily hospital operations, OPD management, IPD management, mock drills scheduling, statutory license renewals, patient tracers, facility management. Give actionable, specific advice. Be direct.`
   },
   {
-    id:'marketing', icon:'📣', name:'Marketing & Growth', desc:'BMC, LinkedIn, NABH SaaS outreach',
-    p:`You are the Marketing Agent for Dr. Mehul Upadhyay. He runs: 1) BookMyClinic (BMC) at bookmyclinics.com — 9 free Gujarat clinics onboarded, WhatsApp outreach system built with GAS + ChatMitra, 200+ hospital WhatsApp messages sent today. 2) NABH Compliance Engine SaaS at upadhyaymehul9-prog.github.io/nabh-compliance — ₹499 Starter/₹999 Professional/₹2999 Consultant per month, new pricing launched today, 5 real users, 0 paying yet, starting LinkedIn content tomorrow. Give specific content ideas, LinkedIn post angles, WhatsApp message templates, outreach strategies. Be creative and direct.`
+    id:'marketing', icon:'📣', name:'Marketing & Growth', desc:'BMC, LinkedIn, AccredReady outreach',
+    p:`You are the Marketing Agent for Dr. Mehul Upadhyay and AccredReady (NABH Compliance Engine SaaS at upadhyaymehul9-prog.github.io/nabh-compliance). He runs: 1) BookMyClinic (BMC) at bookmyclinics.com — 9 free Gujarat clinics onboarded. 2) AccredReady NABH SaaS — ₹499 Starter/₹999 Professional/₹2999 Consultant per month, 5 real users. Give specific content ideas, LinkedIn post angles, WhatsApp message templates, outreach strategies. Be creative and direct.`
   },
   {
     id:'business', icon:'💰', name:'Business & Revenue', desc:'SaaS revenue, pipeline, growth',
-    p:`You are the Business & Revenue Agent for Dr. Mehul Upadhyay. Products: 1) NABH Compliance Engine — ₹499/₹999/₹2999 per month, 5 users, 0 paying, first real consultant user is Soni Ahlawat (NABH consultant, Nagpur). 2) BookMyClinic — 9 free clinics, Founding Partner model. 3) Medicine Reminder Flutter app on Play Store. 4) Hospital KPI Monitor. He needs first paying customer this week. Give brutally direct, specific revenue advice. Priority: convert existing users to paid.`
+    p:`You are the Business & Revenue Agent for AccredReady and Dr. Mehul Upadhyay. Products: 1) AccredReady NABH Compliance Engine — ₹499/₹999/₹2999 per month, 5 users, first consultant user is Soni Ahlawat (NABH consultant, Nagpur). 2) BookMyClinic — 9 free clinics. 3) Medicine Reminder Flutter app. 4) Hospital KPI Monitor. Give brutally direct, specific revenue advice. Priority: convert existing users to paid.`
   },
   {
     id:'hr', icon:'👥', name:'HR & Team', desc:'Staff, training, NABH HR compliance',
-    p:`You are the HR Agent for HMP Foundation, Ankleshwar, Gujarat. Dr. Mehul Upadhyay is Head of Medical Services & Operations. Domain: staff management, NABH-required training records, competency assessments, HR committee meetings, staff performance tracking. Be practical for an Indian hospital pursuing NABH 6th edition accreditation.`
+    p:`You are the HR Agent for HMP Foundation and AccredReady users, Ankleshwar, Gujarat. Dr. Mehul Upadhyay is Head of Medical Services & Operations. Domain: staff management, NABH-required training records, competency assessments, HR committee meetings, staff performance tracking. Be practical for an Indian hospital pursuing NABH 6th edition accreditation.`
   },
   {
-    id:'nabh_saas', icon:'🚀', name:'NABH SaaS Product', desc:'App features, bugs, Play Store',
-    p:`You are the Product Agent for NABH Compliance Engine SaaS by Dr. Mehul Upadhyay. App live at upadhyaymehul9-prog.github.io/nabh-compliance. Stack: React + Supabase (tbptllgcjtiiqspxqcde). Features: 639 scored OEs with tips, 35 clinical & nursing audits, 26 committees, 50 KPIs, calendar planning, statutory license tracker (20 Indian templates), patient tracer (8 types, 120 questions), 13 mock drills, profile screen. Play Store: com.mktech.nabhcompliance "Hospital Accreditation Prep" in closed testing. 5 real users. Pricing: ₹499 Starter/₹999 Professional/₹2999 Consultant. Give specific product, feature prioritization, and growth advice.`
+    id:'nabh_saas', icon:'🚀', name:'AccredReady Product', desc:'App features, bugs, Play Store',
+    p:`You are the Product Agent for AccredReady (NABH Compliance Engine SaaS) by Dr. Mehul Upadhyay. App live at upadhyaymehul9-prog.github.io/nabh-compliance. Stack: React + Supabase. Features: 639 scored OEs with tips, 35 clinical & nursing audits, 26 committees, 50 KPIs, calendar planning, statutory license tracker (20 Indian templates), patient tracer (8 types, 120 questions), 13 mock drills, profile screen. Play Store: com.mktech.nabhcompliance "Hospital Accreditation Prep" in closed testing. Pricing: ₹499 Starter/₹999 Professional/₹2999 Consultant. Give specific product, feature prioritization, and growth advice.`
   }
 ];
 
-const CEO_P = `You are the CEO Agent for Dr. Mehul Upadhyay's personal Hospital AI Operating System. He is Head of Medical Services & Operations at HMP Foundation, Ankleshwar, Gujarat (15 yrs experience, NABH Quality Manager, BHMS degree). He is a solo healthcare tech founder building multiple SaaS products: 1) NABH Compliance Engine (live, 5 real users, new pricing ₹499-₹2999/month launched today, 0 paying, 200 hospital WhatsApp outreach messages sent today via ChatMitra). 2) BookMyClinic — 9 free Gujarat clinics onboarded. 3) Medicine Reminder Flutter app (Play Store, production). 4) Hospital KPI Monitor (live on GitHub Pages). He is starting LinkedIn content tomorrow. IIM Kozhikode Healthcare Management & AI program (Batch 9, Oct 2026). When asked to run morning analysis or propose tasks: analyse all departments and propose exactly 5 specific, actionable tasks for today. Format each task strictly as: [dept_id] Task description — dept_id must be one of: quality, operations, marketing, business, hr, nabh_saas. One task per line. Be brutally direct. Think like a sharp business advisor whose #1 goal is getting his first paying customer this week.`;
+const CEO_P = `You are the CEO Agent for Dr. Mehul Upadhyay's AccredReady AI Operating System. He is Head of Medical Services & Operations at HMP Foundation, Ankleshwar, Gujarat (15 yrs experience, NABH Quality Manager). He is building AccredReady NABH Compliance Engine (live SaaS, 5 real users, pricing ₹499-₹2999/month), BookMyClinic, Medicine Reminder app, and Hospital KPI Monitor. When asked to run morning analysis or propose tasks: analyse all departments and propose exactly 5 specific, actionable tasks for today. Format each task strictly as: [dept_id] Task description — dept_id must be one of: quality, operations, marketing, business, hr, nabh_saas. One task per line. Be brutally direct. Think like a sharp business advisor whose #1 goal is getting his first paying AccredReady customer this week.`;
 
-let apiKey = '';
+let aiConfig = { provider: 'ollama', apiKey: '', model: 'llama3.2', serverUrl: window.location.origin, active: false };
 let activeDept = null;
 let chatHistory = [];
 let tasks = [];
 
-// Init
 document.getElementById('os-date').textContent = new Date().toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
 renderDepts();
-addLog('Hospital AI OS initialised');
+addLog('AccredReady AI OS initialised');
+loadConfig();
+onProviderChange();
 
-function saveKey() {
-  const k = document.getElementById('api-key-input').value.trim();
-  if (!k.startsWith('AIza')) { alert('Please enter a valid Gemini API key starting with AIza'); return; }
-  apiKey = k;
+function loadConfig() {
+  try {
+    const saved = localStorage.getItem('accredready_ai_config');
+    if (saved) {
+      aiConfig = { ...aiConfig, ...JSON.parse(saved), active: true };
+      document.getElementById('provider-select').value = aiConfig.provider;
+      document.getElementById('model-input').value = aiConfig.model;
+      document.getElementById('api-key-input').value = aiConfig.apiKey || '';
+      document.getElementById('url-input').value = aiConfig.serverUrl || window.location.origin;
+      showActive();
+    }
+  } catch (_) {}
+}
+
+function onProviderChange() {
+  const p = PROVIDERS[document.getElementById('provider-select').value];
+  document.getElementById('key-row').style.display = p.needsKey ? 'flex' : 'none';
+  document.getElementById('url-row').style.display = p.needsUrl ? 'flex' : 'none';
+  document.getElementById('model-input').value = p.defaultModel;
+  document.getElementById('provider-hint').innerHTML = p.hint;
+  const link = document.getElementById('key-link');
+  if (p.needsKey) { link.href = p.keyLink; link.style.display = 'inline'; }
+  else link.style.display = 'none';
+  if (p.needsUrl && !document.getElementById('url-input').value) {
+    document.getElementById('url-input').value = p.defaultUrl;
+  }
+}
+
+function saveConfig() {
+  const provider = document.getElementById('provider-select').value;
+  const p = PROVIDERS[provider];
+  const model = document.getElementById('model-input').value.trim() || p.defaultModel;
+  const apiKey = document.getElementById('api-key-input').value.trim();
+  const serverUrl = (document.getElementById('url-input').value.trim() || window.location.origin).replace(/\/$/, '');
+
+  if (p.needsKey && !apiKey) {
+    alert(`Please enter your ${p.name} API key.`);
+    return;
+  }
+  if (provider === 'gemini' && !apiKey.startsWith('AIza')) {
+    alert('Gemini API keys start with AIza');
+    return;
+  }
+
+  aiConfig = { provider, apiKey, model, serverUrl, active: true };
+  localStorage.setItem('accredready_ai_config', JSON.stringify(aiConfig));
+  showActive();
+  addLog(`${p.name} (${model}) activated — all agents online`);
+}
+
+function showActive() {
   document.getElementById('api-banner').style.display = 'none';
   const ok = document.getElementById('api-ok');
   ok.style.display = 'flex';
-  addLog('Gemini API key activated — all agents online');
+  const p = PROVIDERS[aiConfig.provider];
+  document.getElementById('api-ok-text').textContent =
+    `✓ ${p.name} active (${aiConfig.model}) — 6 AccredReady agents ready`;
 }
 
-function clearKey() {
-  apiKey = '';
-  document.getElementById('api-banner').style.display = 'flex';
+function clearConfig() {
+  aiConfig.active = false;
+  localStorage.removeItem('accredready_ai_config');
+  document.getElementById('api-banner').style.display = 'block';
   document.getElementById('api-ok').style.display = 'none';
-  document.getElementById('api-key-input').value = '';
 }
 
 function setView(v, btn) {
@@ -330,39 +429,135 @@ function setIdle(id) {
   if (st) st.textContent = 'Idle';
 }
 
+function buildMessages(systemPrompt, messages) {
+  return [
+    { role: 'system', content: systemPrompt },
+    ...messages.map(m => ({ role: m.role, content: m.content }))
+  ];
+}
+
+async function callOllama(systemPrompt, messages) {
+  const url = `${aiConfig.serverUrl}/api/ollama/chat`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: aiConfig.model,
+      messages: buildMessages(systemPrompt, messages),
+      temperature: 0.75,
+      max_tokens: 1024
+    })
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error?.message || data.error || `Ollama error ${resp.status}`);
+  return data.choices[0].message.content;
+}
+
+async function callOpenAICompatible(endpoint, systemPrompt, messages, extraHeaders = {}) {
+  const resp = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...extraHeaders
+    },
+    body: JSON.stringify({
+      model: aiConfig.model,
+      messages: buildMessages(systemPrompt, messages),
+      max_tokens: 1024,
+      temperature: 0.75
+    })
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error?.message || data.error || `API error ${resp.status}`);
+  return data.choices[0].message.content;
+}
+
 async function callGemini(systemPrompt, messages) {
-  if (!apiKey) throw new Error('No API key set');
   const contents = messages.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }]
   }));
-  const body = {
-    system_instruction: { parts: [{ text: systemPrompt }] },
-    contents,
-    generationConfig: { maxOutputTokens: 1024, temperature: 0.75 }
-  };
-  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!resp.ok) {
-    const e = await resp.json();
-    throw new Error(e.error?.message || `API error ${resp.status}`);
-  }
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${aiConfig.model}:generateContent?key=${aiConfig.apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: { maxOutputTokens: 1024, temperature: 0.75 }
+      })
+    }
+  );
   const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error?.message || `Gemini error ${resp.status}`);
   return data.candidates[0].content.parts[0].text;
 }
 
+async function callHuggingFace(systemPrompt, messages) {
+  const prompt = buildMessages(systemPrompt, messages)
+    .map(m => `${m.role === 'system' ? 'System' : m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+    .join('\n\n') + '\n\nAssistant:';
+  const resp = await fetch(
+    `https://api-inference.huggingface.co/models/${aiConfig.model}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${aiConfig.apiKey}`
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: { max_new_tokens: 1024, temperature: 0.75, return_full_text: false }
+      })
+    }
+  );
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || `HF error ${resp.status}`);
+  if (Array.isArray(data) && data[0]?.generated_text) return data[0].generated_text.trim();
+  if (data.generated_text) return data.generated_text.trim();
+  throw new Error('Unexpected Hugging Face response format');
+}
+
+async function callLLM(systemPrompt, messages) {
+  if (!aiConfig.active) throw new Error('AI not configured. Set up a provider first.');
+  switch (aiConfig.provider) {
+    case 'ollama':
+      return callOllama(systemPrompt, messages);
+    case 'gemini':
+      return callGemini(systemPrompt, messages);
+    case 'groq':
+      return callOpenAICompatible(
+        'https://api.groq.com/openai/v1/chat/completions',
+        systemPrompt, messages,
+        { Authorization: `Bearer ${aiConfig.apiKey}` }
+      );
+    case 'openrouter':
+      return callOpenAICompatible(
+        'https://openrouter.ai/api/v1/chat/completions',
+        systemPrompt, messages,
+        {
+          Authorization: `Bearer ${aiConfig.apiKey}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'AccredReady AI OS'
+        }
+      );
+    case 'huggingface':
+      return callHuggingFace(systemPrompt, messages);
+    default:
+      throw new Error('Unknown provider');
+  }
+}
+
 async function runAnalysis() {
-  if (!apiKey) { alert('Please enter your Gemini API key first.'); return; }
+  if (!aiConfig.active) { alert('Please configure an AI provider first.'); return; }
   const btn = document.getElementById('abtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> Analysing...';
   DEPTS.forEach(d => setWorking(d.id, 'Analysing current state...'));
   addLog('CEO Agent: morning analysis started');
   try {
-    const text = await callGemini(CEO_P, [{
+    const text = await callLLM(CEO_P, [{
       role: 'user',
       content: 'Run morning analysis now. Propose exactly 5 specific actionable tasks for today. Strict format: [dept_id] Task description. One per line. dept_id from: quality, operations, marketing, business, hr, nabh_saas. Be specific and direct.'
     }]);
@@ -446,7 +641,7 @@ async function sendMsg() {
   const inp = document.getElementById('chat-inp');
   const msg = inp.value.trim();
   if (!msg) return;
-  if (!apiKey) { alert('Please enter your Gemini API key first.'); return; }
+  if (!aiConfig.active) { alert('Please configure an AI provider first.'); return; }
   inp.value = '';
   const ms = document.getElementById('chat-msgs');
   ms.innerHTML += `<div class="msg user">${msg.replace(/</g,'&lt;')}</div>`;
@@ -457,7 +652,7 @@ async function sendMsg() {
   ms.scrollTop = ms.scrollHeight;
   chatHistory.push({ role: 'user', content: msg });
   try {
-    const reply = await callGemini(activeDept.p, chatHistory);
+    const reply = await callLLM(activeDept.p, chatHistory);
     chatHistory.push({ role: 'assistant', content: reply });
     ld.remove();
     const fmt = reply
