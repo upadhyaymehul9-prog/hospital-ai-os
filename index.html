@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/hospital-ai-os/">
 <title>AccredReady AI OS — NABH Hospital Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -263,7 +264,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="agent.js"></script>
+<script src="accred-core.js"></script>
 <script>
 const PROVIDERS = {
   ollama: {
@@ -353,9 +354,13 @@ renderDepts();
 addLog('AccredReady AI OS initialised');
 loadConfig();
 onProviderChange();
-initRealAgent();
+try { initRealAgent(); } catch (e) { console.error(e); }
 
 function initRealAgent() {
+  if (typeof AccredAgent === 'undefined') {
+    addLog('⚠ Real agent module failed to load — refresh page or disable ad blocker');
+    return;
+  }
   AccredAgent.initAgent({
     onActionUpdate: renderActions,
     onLog: addLog
@@ -366,6 +371,10 @@ function initRealAgent() {
 }
 
 async function doLogin() {
+  if (typeof AccredAgent === 'undefined') {
+    alert('Real agent failed to load. Please hard-refresh (Ctrl+Shift+R) or disable ad blocker, then try again.');
+    return;
+  }
   const email = document.getElementById('login-email').value.trim();
   const pass = document.getElementById('login-pass').value;
   if (!email || !pass) { alert('Enter your AccredReady email and password'); return; }
