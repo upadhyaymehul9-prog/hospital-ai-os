@@ -156,9 +156,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="api-banner-row">
     <span class="api-banner-label">AI Provider:</span>
     <select class="api-select" id="provider-select" onchange="onProviderChange()">
-      <option value="ollama">Ollama (Free, Local)</option>
-      <option value="gemini">Google Gemini (Free tier)</option>
+      <option value="gemini">Google Gemini (Free — recommended)</option>
       <option value="groq">Groq (Free tier)</option>
+      <option value="ollama" id="opt-ollama">Ollama (Local PC only)</option>
       <option value="openrouter">OpenRouter (Free models)</option>
       <option value="huggingface">Hugging Face (Free tier)</option>
     </select>
@@ -238,7 +238,7 @@ const PROVIDERS = {
     needsKey: true,
     needsUrl: false,
     defaultModel: 'gemini-2.0-flash',
-    hint: 'Free tier: ~1,500 requests/day. Get key at Google AI Studio.',
+    hint: '✅ Best for GitHub Pages. Free ~1,500 requests/day. Step 1: Click "Get free key" below. Step 2: Paste key. Step 3: Click Activate Agents.',
     keyLink: 'https://aistudio.google.com/app/apikey'
   },
   groq: {
@@ -296,12 +296,17 @@ const DEPTS = [
 
 const CEO_P = `You are the CEO Agent for Dr. Mehul Upadhyay's AccredReady AI Operating System. He is Head of Medical Services & Operations at HMP Foundation, Ankleshwar, Gujarat (15 yrs experience, NABH Quality Manager). He is building AccredReady NABH Compliance Engine (live SaaS, 5 real users, pricing ₹499-₹2999/month), BookMyClinic, Medicine Reminder app, and Hospital KPI Monitor. When asked to run morning analysis or propose tasks: analyse all departments and propose exactly 5 specific, actionable tasks for today. Format each task strictly as: [dept_id] Task description — dept_id must be one of: quality, operations, marketing, business, hr, nabh_saas. One task per line. Be brutally direct. Think like a sharp business advisor whose #1 goal is getting his first paying AccredReady customer this week.`;
 
-let aiConfig = { provider: 'ollama', apiKey: '', model: 'llama3.2', serverUrl: window.location.origin, active: false };
+const IS_LIVE = location.hostname.includes('github.io');
+let aiConfig = { provider: 'gemini', apiKey: '', model: 'gemini-2.0-flash', serverUrl: window.location.origin, active: false };
 let activeDept = null;
 let chatHistory = [];
 let tasks = [];
 
 document.getElementById('os-date').textContent = new Date().toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+if (IS_LIVE) {
+  document.getElementById('opt-ollama').style.display = 'none';
+  document.getElementById('provider-select').value = 'gemini';
+}
 renderDepts();
 addLog('AccredReady AI OS initialised');
 loadConfig();
