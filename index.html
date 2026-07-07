@@ -640,22 +640,34 @@ async function runWriteTool(name, args) {
   }
 }
 
-async function runAgent(groqApiKey, model, messages, systemPrompt) {
-  const maxSteps = 6;
+async function runAgent(groqApiKey, model, messages, systemPrompt, options = {}) {
+  const useTools = options.useTools !== false;
+  const maxSteps = useTools ? 6 : 1;
   let step = 0;
-  const msgs = [{ role: 'system', content: systemPrompt }, ...messages];
+  const toolList = AGENT_TOOLS.map(t => t.function.name).join(', ');
+  const sys = useTools
+    ? systemPrompt + `\n\nONLY these tools exist: ${toolList}. NEVER invent other tool names.`
+    : systemPrompt + '\n\nDo NOT use any tools. Answer directly in plain text.';
+  const msgs = [{ role: 'system', content: sys }, ...messages];
 
   while (step < maxSteps) {
     step++;
     let resp;
+    const body = {
+      model: model || 'llama-3.3-70b-versatile',
+      messages: msgs,
+      max_tokens: 2048,
+      temperature: 0.5
+    };
+    if (useTools) {
+      body.tools = AGENT_TOOLS;
+      body.tool_choice = 'auto';
+    }
     try {
       resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqApiKey}` },
-        body: JSON.stringify({
-          model: model || 'llama-3.3-70b-versatile', messages: msgs, tools: AGENT_TOOLS,
-          tool_choice: 'auto', max_tokens: 2048, temperature: 0.4
-        })
+        body: JSON.stringify(body)
       });
     } catch (e) {
       throw new Error('Cannot reach Groq API. Check your API key and internet connection.');
@@ -667,17 +679,22 @@ async function runAgent(groqApiKey, model, messages, systemPrompt) {
     const msg = choice.message;
     msgs.push(msg);
 
-    if (choice.finish_reason === 'stop' || !msg.tool_calls?.length) {
+    if (!useTools || choice.finish_reason === 'stop' || !msg.tool_calls?.length) {
       return { reply: msg.content || 'Done.', steps: step };
     }
 
+    const validNames = new Set(AGENT_TOOLS.map(t => t.function.name));
     for (const tc of msg.tool_calls) {
       const fn = tc.function;
       let args = {};
       try { args = JSON.parse(fn.arguments || '{}'); } catch (_) {}
       onLog(`Tool: ${fn.name}`);
       let result;
-      try { result = await executeTool(fn.name, args); } catch (e) { result = { error: e.message }; }
+      if (!validNames.has(fn.name)) {
+        result = { error: 'Tool not found. Answer using text only.' };
+      } else {
+        try { result = await executeTool(fn.name, args); } catch (e) { result = { error: e.message }; }
+      }
       msgs.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(result) });
     }
   }
@@ -690,8 +707,8 @@ CHAT RULES (critical):
 - Answer the user's ACTUAL question in plain language first.
 - NEVER use [dept_id] task format in chat — that format is ONLY for Run Analysis button.
 - Be SPECIFIC: use numbers, names, dates, rupee amounts, exact next steps. No fluff like "develop a strategy" or "utilize scores as marketing tool".
-- If they ask market analysis: give competitors, target customers, pricing comparison, 3 channels, 1 LinkedIn post draft, 1 WhatsApp message draft.
-- Use tools to get real data when relevant, then interpret it clearly.
+- If they ask market analysis: give competitors, target customers, pricing comparison, 3 channels, 1 LinkedIn post draft, 1 WhatsApp message draft. Do NOT call tools for market/marketing questions.
+- Use tools ONLY for: gaps, scores, licenses, KPIs, audits, compliance data.
 
 Write actions queue for user approval. Read tools run automatically.`;
 
@@ -804,6 +821,12 @@ MARKET ANALYSIS must include:
 [dept_id] task format ONLY when user says "run analysis" or "propose tasks" — NOT for normal questions.`;
 
 const CHAT_RULES = `Never be vague. Bad: "develop a pricing strategy". Good: "Message Soni Ahlawat today: 'Professional plan ₹999/mo — I'll onboard your Nagpur clients personally this week.' Follow up Friday if no reply."`;
+
+function needsDataTools(text) {
+  const t = text.toLowerCase();
+  if (/market|marketing|linkedin|whatsapp|competitor|outreach|post draft|growth strategy|business plan|analyze market|saas strategy|first customer|pricing strategy/.test(t)) return false;
+  return /gap|score|oe|capa|license|kpi|audit|compliance|nabh|drill|committee|expir|unscored|readiness/.test(t);
+}
 
 const IS_LIVE = location.hostname.includes('github.io');
 let aiConfig = { provider: 'groq', apiKey: '', model: 'llama-3.3-70b-versatile', serverUrl: window.location.origin, active: false };
@@ -1337,7 +1360,7 @@ async function sendMsg() {
   ms.innerHTML += `<div class="msg user">${msg.replace(/</g,'&lt;')}</div>`;
   const ld = document.createElement('div');
   ld.className = 'msg loading';
-  ld.textContent = isRealAgent() ? 'Running tools on AccredReady...' : 'Thinking...';
+  ld.textContent = isRealAgent() && needsDataTools(msg) ? 'Reading AccredReady data...' : 'Thinking...';
   ms.appendChild(ld);
   ms.scrollTop = ms.scrollHeight;
   chatHistory.push({ role: 'user', content: msg });
@@ -1346,8 +1369,9 @@ async function sendMsg() {
     if (isRealAgent()) {
       const system = AccredAgent.AGENT_SYSTEM + '\n\n' + CHAT_RULES + '\n\n' + activeDept.p;
       const cleanHistory = chatHistory.filter(m => m.role === 'user' || m.role === 'assistant');
+      const useTools = needsDataTools(msg);
       const { reply: agentReply } = await AccredAgent.runAgent(
-        aiConfig.apiKey, aiConfig.model, cleanHistory, system
+        aiConfig.apiKey, aiConfig.model, cleanHistory, system, { useTools }
       );
       reply = agentReply;
       renderActions(AccredAgent.getPendingActions());
